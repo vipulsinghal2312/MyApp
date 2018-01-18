@@ -13,7 +13,7 @@ import com.firebase.client.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    //this os fpr testing purpose for github
+    //this os fpr testing purpose for github.
     private TextView mscoreView;
     private TextView mQuestion;
     private Button mButtonChoice1,mButtonChoice2,mButtonChoice3,mButtonChoice4;
