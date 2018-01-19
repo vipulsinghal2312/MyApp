@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     //UI fields
     //this is from another user. using clone
     //2nd test
+    //final test for local pc
     private TextView mscoreView;
     private TextView mQuestion;
     private Button mButtonChoice1,mButtonChoice2,mButtonChoice3,mButtonChoice4;
