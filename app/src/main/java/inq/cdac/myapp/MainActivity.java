@@ -31,12 +31,34 @@ public class MainActivity extends AppCompatActivity {
 
         mscoreView = findViewById(R.id.score);
         mQuestion = findViewById(R.id.question);
+
         mButtonChoice1 = findViewById(R.id.choice1);
         mButtonChoice2 = findViewById(R.id.choice2);
         mButtonChoice3 = findViewById(R.id.choice3);
         mButtonChoice4 = findViewById(R.id.choice4);
 
+        String fetchedString = null;
+
+       if(savedInstanceState==null)
+       {
+           Bundle extras = getIntent().getExtras();
+           if(extras==null)
+           {
+               fetchedString=null;
+           }
+           else {
+               fetchedString = extras.getString("Topic");
+           }
+       }
+       else {
+           fetchedString = (String) savedInstanceState.getSerializable("Topic");
+       }
+
+
        updateQuestion();
+
+
+
         //button1
        mButtonChoice1.setOnClickListener(new View.OnClickListener() {
            @Override
@@ -112,10 +134,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
       private void updateScore(int score)
       {
+
           mscoreView.setText(""+mScore);
       }
+
+
     public void updateQuestion()
     {
         mQuestionRef = new Firebase("https://myquiz-330ec.firebaseio.com/"+mQuestionNumber+"/question");
