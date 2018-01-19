@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     //this os fpr testing purpose for github...
     //UI fields
+    //this is from another user. using clone
     private TextView mscoreView;
     private TextView mQuestion;
     private Button mButtonChoice1,mButtonChoice2,mButtonChoice3,mButtonChoice4;
