@@ -22,7 +22,7 @@ ImageView permutationsandcombinations,probability,analogies,numberseries;
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(TopicsActivity.this,MainActivity.class);
+                Intent intent = new Intent(TopicsActivity.this,QuestionActivity.class);
                 intent.putExtra("Topic",1);
                 startActivity(intent);
 
@@ -34,7 +34,7 @@ ImageView permutationsandcombinations,probability,analogies,numberseries;
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(TopicsActivity.this,MainActivity.class);
+                Intent intent = new Intent(TopicsActivity.this,QuestionActivity.class);
                 intent.putExtra("Topic",2);
                 startActivity(intent);
 
@@ -46,7 +46,7 @@ ImageView permutationsandcombinations,probability,analogies,numberseries;
         analogies.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(TopicsActivity.this,MainActivity.class);
+                Intent intent = new Intent(TopicsActivity.this,QuestionActivity.class);
                 intent.putExtra("Topic",3);
                 startActivity(intent);
 
@@ -56,7 +56,7 @@ ImageView permutationsandcombinations,probability,analogies,numberseries;
         numberseries.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(TopicsActivity.this,MainActivity.class);
+                Intent intent = new Intent(TopicsActivity.this,QuestionActivity.class);
                 intent.putExtra("Topic",4);
                 startActivity(intent);
 

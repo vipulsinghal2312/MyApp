@@ -1,206 +1,172 @@
 package inq.cdac.myapp;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.rengwuxian.materialedittext.MaterialEditText;
+
+import inq.cdac.myapp.model.User;
 
 public class MainActivity extends AppCompatActivity {
 
-    //this os fpr testing purpose for github...
-    //UI fields
-    private TextView mscoreView;
-    private TextView mQuestion;
-    private Button mButtonChoice1,mButtonChoice2,mButtonChoice3,mButtonChoice4;
+    MaterialEditText edtNewUser, edtNewPassword, edtNewEmail; //for sign up
+    MaterialEditText edtUser, edtPassword; //for sign In
 
-    private int mScore;
-    private int mQuestionNumber = 0;
-    private String mAnswer;
-    private Firebase mQuestionRef,mchoice1Ref,mChoice2Ref,mChoice3Ref,mChoice4Ref,mAnswerRef;
+    Button btnSignUp, btnSignIn;
+
+    FirebaseDatabase database;
+    DatabaseReference users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mscoreView = findViewById(R.id.score);
-        mQuestion = findViewById(R.id.question);
-        mButtonChoice1 = findViewById(R.id.choice1);
-        mButtonChoice2 = findViewById(R.id.choice2);
-        mButtonChoice3 = findViewById(R.id.choice3);
-        mButtonChoice4 = findViewById(R.id.choice4);
+        //firebase
+        database = FirebaseDatabase.getInstance();
+        users = database.getReference("Users");
 
-       updateQuestion();
-        //button1
-       mButtonChoice1.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
+        edtUser = (MaterialEditText) findViewById(R.id.edtUser);
+        edtPassword = (MaterialEditText) findViewById(R.id.edtpassword);
 
-               if(mButtonChoice1.getText().equals(mAnswer))
-               {
-                   mScore = mScore+1;
-                   updateQuestion();
-                   updateScore(mScore);
-               }
-               else
-               {
-                   updateQuestion();
-               }
 
-           }
-       });
-       //button2
-       mButtonChoice2.setOnClickListener(new View.OnClickListener() {
+        btnSignIn =(Button) findViewById(R.id.btn_sign_in);
+        btnSignUp =(Button) findViewById(R.id.btn_sign_up);
+
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                showSignUpDialog();
+            }
+        });
 
-                if(mButtonChoice2.getText().equals(mAnswer))
-                {
-                    mScore = mScore+1;
-                    updateQuestion();
-                    updateScore(mScore);
-                }
-                else
-                {
-                    updateQuestion();
-                }
+
+
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signIn(edtUser.getText().toString(),edtPassword.getText().toString());
 
             }
         });
-       //button3
-        mButtonChoice3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                if(mButtonChoice3.getText().equals(mAnswer))
-                {
-                    mScore = mScore+1;
-                    updateQuestion();
-                    updateScore(mScore);
-                }
-                else
-                {
-                    updateQuestion();
-                }
-
-            }
-        });
-        //button4
-        mButtonChoice4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(mButtonChoice4.getText().equals(mAnswer))
-                {
-                    mScore = mScore+1;
-                    updateQuestion();
-                    updateScore(mScore);
-                }
-                else
-                {
-                    updateQuestion();
-                }
-
-            }
-        });
 
     }
 
-      private void updateScore(int score)
-      {
-          mscoreView.setText(""+mScore);
-      }
-    public void updateQuestion()
-    {
-        mQuestionRef = new Firebase("https://myquiz-330ec.firebaseio.com/"+mQuestionNumber+"/question");
-        mQuestionRef.addValueEventListener(new ValueEventListener() {
+    private void signIn(final String user, final String pwd) {
+
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String question = dataSnapshot.getValue(String.class);
-                mQuestion.setText(question);
+
+                if(dataSnapshot.child(user).exists())
+                {
+
+                    if(!user.isEmpty())
+                    {
+                        User login = dataSnapshot.child(user).getValue(User.class);
+                        if(login.getPassword().equals(pwd)){
+                            Toast.makeText(MainActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+
+                        }
+                        else {
+                            Toast.makeText(MainActivity.this, "Wrong password", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Please enter your user name", Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "User is not Exists", Toast.LENGTH_SHORT).show();
+
+                }
 
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
 
-        mchoice1Ref = new Firebase("https://myquiz-330ec.firebaseio.com/"+mQuestionNumber+"/choice1");
-        mchoice1Ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String choice = dataSnapshot.getValue(String.class);
-                mButtonChoice1.setText(choice);
-            }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
-        mChoice2Ref = new Firebase("https://myquiz-330ec.firebaseio.com/"+mQuestionNumber+"/choice2");
-        mChoice2Ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String choice = dataSnapshot.getValue(String.class);
-                mButtonChoice2.setText(choice);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-        mChoice3Ref = new Firebase("https://myquiz-330ec.firebaseio.com/"+mQuestionNumber+"/choice3");
-        mChoice3Ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String choice = dataSnapshot.getValue(String.class);
-                mButtonChoice3.setText(choice);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-        mChoice4Ref = new Firebase("https://myquiz-330ec.firebaseio.com/"+mQuestionNumber+"/choice4");
-        mChoice4Ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String choice = dataSnapshot.getValue(String.class);
-                mButtonChoice4.setText(choice);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-
-        mAnswerRef = new Firebase("https://myquiz-330ec.firebaseio.com/"+mQuestionNumber+"/answer");
-        mAnswerRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                mAnswer = dataSnapshot.getValue(String.class);
-
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-        mQuestionNumber++;
     }
+
+    private void showSignUpDialog() {
+
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+        alertDialog.setTitle("Sign Up");
+        alertDialog.setMessage("Please fill full information");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View sign_up_layout = inflater.inflate(R.layout.sign_up_layout,null);
+
+        edtNewUser = (MaterialEditText) sign_up_layout.findViewById(R.id.edtNewUserName);
+        edtNewPassword = (MaterialEditText) sign_up_layout.findViewById(R.id.edtNewpassword);
+        edtNewEmail = (MaterialEditText) sign_up_layout.findViewById(R.id.edtNewEmail);
+
+        alertDialog.setView(sign_up_layout);
+        alertDialog.setIcon(R.drawable.ic_account_circle_black_24dp);
+
+        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+
+        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                final User newUser = new User(edtNewUser.getText().toString(),
+                        edtNewPassword.getText().toString(),
+                        edtNewEmail.getText().toString());
+
+                users.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.child(newUser.getUserName()).exists())
+                            Toast.makeText(MainActivity.this, "User already exists", Toast.LENGTH_SHORT).show();
+                        else {
+                            users.child(newUser.getUserName()).setValue(newUser);
+                            Toast.makeText(MainActivity.this, "User Registration Success", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                dialogInterface.dismiss();
+
+
+            }
+        });
+
+        alertDialog.show();
+
+    }
+
 }
